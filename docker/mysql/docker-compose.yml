@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mysql:
+    platform: linux/x86_64
+    image: mysql:8.1.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      TZ: Asia/Seoul
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    ports:
+      - 13306:3306

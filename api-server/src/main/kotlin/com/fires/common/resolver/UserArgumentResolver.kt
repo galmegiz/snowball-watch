@@ -1,0 +1,42 @@
+package com.fires.common.resolver
+
+import com.fires.common.annotation.LoginUser
+import com.fires.common.exception.ErrorCode
+import com.fires.common.exception.ServiceException
+import com.fires.common.interceptor.TokenVerifyInterceptor
+import com.fires.domain.user.domain.dto.User
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.core.MethodParameter
+import org.springframework.stereotype.Component
+import org.springframework.web.bind.support.WebDataBinderFactory
+import org.springframework.web.context.request.NativeWebRequest
+import org.springframework.web.method.support.HandlerMethodArgumentResolver
+import org.springframework.web.method.support.ModelAndViewContainer
+
+/**
+ * 컨트롤러에 LoginUser annotation 존재시 값을 바인딩한다.
+ */
+@Component
+class UserArgumentResolver : HandlerMethodArgumentResolver {
+
+    /**
+     * 컨트롤러에 LoginUser annotation 존재여부 확인
+     */
+    override fun supportsParameter(parameter: MethodParameter): Boolean {
+        return parameter.hasParameterAnnotation(LoginUser::class.java)
+    }
+
+    /**
+     * LoginUser annotation 존재시 토큰을 확인하여 사용자의 정보를 바인딩한다
+     */
+    override fun resolveArgument(
+        parameter: MethodParameter,
+        mavContainer: ModelAndViewContainer?,
+        webRequest: NativeWebRequest,
+        binderFactory: WebDataBinderFactory?
+    ): User {
+        return webRequest.getNativeRequest(HttpServletRequest::class.java)
+            ?.getAttribute(TokenVerifyInterceptor.profileKey) as User?
+            ?: throw ServiceException(ErrorCode.INVALID_TOKEN_ERROR)
+    }
+}

@@ -1,0 +1,16 @@
+.idea
+.gradle
+gradle
+build
+*/out
+*/build
+.DS_Store
+*.log
+.env*
+native
+kotlin-profile
+wrapper
+daemon
+
+**/resources/
+YfinaceClient.kt
